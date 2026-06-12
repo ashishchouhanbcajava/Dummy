@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Razorpay Payment</title>
+
+	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+</head>
+
+<body>
+
+	<h2>Razorpay Payment Demo</h2>
+
+	<button onclick="payNow()">Pay</button>
+
+	<script>
+
+		async function payNow() {
+
+			try {
+
+				const response = await fetch('../app/createOrder?amount=1', {
+					method: 'POST'
+				});
+
+				const order = await response.json();
+
+				console.log(order);
+
+				var options = {
+
+					key: 'rzp_test_T0CLhszzwRpcqW',
+
+					amount: order.amount,
+
+					currency: order.currency,
+
+					order_id: order.id,
+
+					name: 'Spring Boot Demo',
+
+					description: 'Test Payment',
+
+					handler: function (response) {
+
+						console.log(response);
+
+						verifyPayment(response);
+
+					},
+
+					prefill: {
+
+						name: 'Ashish',
+
+						email: 'test@gmail.com',
+
+						contact: '9999999999'
+
+					},
+
+					theme: {
+						color: '#3399cc'
+					}
+
+				};
+
+				var rzp = new Razorpay(options);
+
+				rzp.open();
+
+			} catch (e) {
+
+				console.error(e);
+
+				alert("Unable to create order");
+
+			}
+
+		}
+
+		async function verifyPayment(paymentResponse) {
+
+			try {
+
+				const response = await fetch('../app/verify', {
+
+					method: 'POST',
+
+					headers: {
+						'Content-Type': 'application/json'
+					},
+
+					body: JSON.stringify(paymentResponse)
+
+				});
+
+				const result = await response.text();
+
+				alert(result);
+
+			} catch (e) {
+
+				console.error(e);
+
+				alert("Verification Failed");
+
+			}
+
+		}
+
+	</script>
+
+</body>
+
+</html>
