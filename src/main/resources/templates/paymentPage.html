@@ -15,6 +15,11 @@
 
 	<button onclick="payNow()">Pay</button>
 
+
+	<form th:action="@{/logout}" method="post">
+		<button type="submit">Logout</button>
+	</form>
+
 	<script>
 
 		async function payNow() {

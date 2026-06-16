@@ -17,10 +17,10 @@ public class UsersService implements UserDetailsService {
 	@Autowired
 	private UsersRepository repository;
 
-	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		// TODO Auto-generated method stub
+		System.out.println("i m in userDetails Service .......");
 		return repository.findByUsername(username);
 	}
 

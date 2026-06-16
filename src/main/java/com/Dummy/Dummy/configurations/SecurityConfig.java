@@ -20,17 +20,38 @@ import com.Dummy.Dummy.service.UsersService;
 @EnableWebSecurity
 public class SecurityConfig {
 
+	@Autowired
+	private UserDetailsService detailsService;
+
 	// basic auth configuration for sending username and passsword with each and
 	// every request
+//	@Bean
+//	SecurityFilterChain config(HttpSecurity http) throws Exception {
+//		System.out.println("in security config");
+//		return http.csrf(csrf -> csrf.disable()).
+//
+//				authorizeHttpRequests(
+//						au -> au.requestMatchers("/login", "/users/add").permitAll().anyRequest().authenticated())
+//				.httpBasic(Customizer.withDefaults()).build();
+//	}
+
+	// configuration for mvc form login with same daoAuthentication provider and
+	// spring security automatically handles the logout you only have to provide
+	// below form no endpoint is needed to process this logout url
+	// <form th:action="@{/logout}" method="post">
+	// <button type="submit">Logout</button>
+	// </form>
 
 	@Bean
-	SecurityFilterChain config(HttpSecurity http) throws Exception {
-		System.out.println("in security config");
-		return http.csrf(csrf -> csrf.disable()).
+	SecurityFilterChain formLoginConfig(HttpSecurity http) throws Exception {
 
-				authorizeHttpRequests(
-						au -> au.requestMatchers("/login", "/users/add").permitAll().anyRequest().authenticated())
-				.httpBasic(Customizer.withDefaults()).build();
+		return http
+				.authorizeHttpRequests(auth -> auth.requestMatchers("/src/main/resources/**", "/login").permitAll()
+						.anyRequest().authenticated())
+				.formLogin(login -> login.loginPage("/login").defaultSuccessUrl("/paymentPage"))
+				.logout(l -> l.logoutUrl("/logout").clearAuthentication(true).invalidateHttpSession(true)
+						.deleteCookies("JSESSIONID"))
+				.build();
 	}
 
 	@Bean
@@ -38,14 +59,14 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Bean
-	UserDetailsService getUserDetailsService() {
-		return new UsersService();
-	}
+//	@Bean
+//	UserDetailsService getUserDetailsService() {
+//		return new UsersService();
+//	}
 
 	@Bean
 	AuthenticationManager authenticationManager() {
-		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(getUserDetailsService());
+		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(detailsService);
 		daoAuthenticationProvider.setPasswordEncoder(getEncoder());
 		return new ProviderManager(daoAuthenticationProvider);
 	}
