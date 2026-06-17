@@ -28,7 +28,7 @@ public class UsersRestController {
 	@PostMapping("/add")
 	public ResponseEntity<?> add(@RequestBody Users users) {
 
-		if (users.getUsername().contains("admin")) {
+		if (users.getUsername().toLowerCase().contains("admin")) {
 			users.setRole("ADMIN");
 		} else {
 			users.setRole("USER");
