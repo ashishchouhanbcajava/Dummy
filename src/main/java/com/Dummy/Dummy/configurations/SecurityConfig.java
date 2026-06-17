@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.util.Assert;
 
 import com.Dummy.Dummy.beans.CustomAccessDeniedExceptionHandler;
 import com.Dummy.Dummy.service.UsersService;
@@ -28,7 +30,24 @@ public class SecurityConfig {
 	private CustomAccessDeniedExceptionHandler accessDeniedExceptionHandler;
 
 	// basic auth configuration for sending username and passsword with each and
-	// every request
+	// every request at here we have used hasAuthority and hasAnyAuthority to check
+	// the user role beacause we have overriden getAuthorities() method in our user
+	// class in which we have save String role as it is but when the authorization
+	// manager matches the role of specific user it matches like below code so we
+	// use hasAuthority and hasAnyAuthority ,if we saved the role or return the
+	// authority like ROLE_USER, ROLE_ADMIN then we can use the hasRole() method
+
+//	public static <T> AuthorityAuthorizationManager<T> hasRole(String role) {
+
+//		Assert.notNull(role, "role cannot be null");
+
+//		Assert.isTrue(!role.startsWith(ROLE_PREFIX), () -> role + " should not start with " + ROLE_PREFIX + " since "
+
+//				+ ROLE_PREFIX + " is automatically prepended when using hasRole. Consider using hasAuthority instead.");
+
+//		return hasAuthority(ROLE_PREFIX + role);
+
+//	}
 	@Bean
 	SecurityFilterChain config(HttpSecurity http) throws Exception {
 		System.out.println("in security config");
