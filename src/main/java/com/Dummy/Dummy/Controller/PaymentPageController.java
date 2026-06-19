@@ -14,6 +14,9 @@ public class PaymentPageController {
 
 	@GetMapping("/paymentPage")
 	public String paymentPage() {
+		
+		int[] a=new int[5];
+		int length = a.length;
 		Users principal = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		System.out.println("user name : " + principal.getUsername());
 		return "paymentPage";

@@ -48,17 +48,17 @@ public class SecurityConfig {
 //		return hasAuthority(ROLE_PREFIX + role);
 
 //	}
-	@Bean
-	SecurityFilterChain config(HttpSecurity http) throws Exception {
-		System.out.println("in security config");
-		return http.csrf(csrf -> csrf.disable()).
-
-				authorizeHttpRequests(au -> au.requestMatchers("/login", "/users/add").permitAll()
-						.requestMatchers("/admin/**").hasAuthority("ADMIN").requestMatchers("/users/**")
-						.hasAnyAuthority("ADMIN", "USER").anyRequest().authenticated())
-				.httpBasic(Customizer.withDefaults())
-				.exceptionHandling(e -> e.accessDeniedHandler(accessDeniedExceptionHandler)).build();
-	}
+//	@Bean
+//	SecurityFilterChain config(HttpSecurity http) throws Exception {
+//		System.out.println("in security config");
+//		return http.csrf(csrf -> csrf.disable()).
+//
+//				authorizeHttpRequests(au -> au.requestMatchers("/login", "/users/add").permitAll()
+//						.requestMatchers("/admin/**").hasAuthority("ADMIN").requestMatchers("/users/**")
+//						.hasAnyAuthority("ADMIN", "USER").anyRequest().authenticated())
+//				.httpBasic(Customizer.withDefaults())
+//				.exceptionHandling(e -> e.accessDeniedHandler(accessDeniedExceptionHandler)).build();
+//	}
 
 	// configuration for mvc form login with same daoAuthentication provider and
 	// spring security automatically handles the logout you only have to provide
@@ -66,18 +66,18 @@ public class SecurityConfig {
 	// <form th:action="@{/logout}" method="post">
 	// <button type="submit">Logout</button>
 	// </form>
-//	@Bean
-//	SecurityFilterChain formLoginConfig(HttpSecurity http) throws Exception {
-//
-//		return http
-//				.authorizeHttpRequests(auth -> auth.requestMatchers("/src/main/resources/**", "/login").permitAll()
-//						.requestMatchers("/admin/**").hasRole("ADMIN").requestMatchers("/users/**")
-//						.hasAnyRole("USER", "ADMIN").anyRequest().authenticated())
-//				.formLogin(login -> login.loginPage("/login").defaultSuccessUrl("/paymentPage"))
-//				.logout(l -> l.logoutUrl("/logout").clearAuthentication(true).invalidateHttpSession(true)
-//						.deleteCookies("JSESSIONID"))
-//				.build();
-//	}
+	@Bean
+	SecurityFilterChain formLoginConfig(HttpSecurity http) throws Exception {
+
+		return http.csrf(c -> c.ignoringRequestMatchers("/verify", "/createOrder"))
+				.authorizeHttpRequests(auth -> auth.requestMatchers("/src/main/resources/**", "/login").permitAll()
+						.requestMatchers("/admin/**").hasRole("ADMIN").requestMatchers("/users/**")
+						.hasAnyRole("USER", "ADMIN").anyRequest().authenticated())
+				.formLogin(login -> login.loginPage("/login").defaultSuccessUrl("/paymentPage"))
+				.logout(l -> l.logoutUrl("/logout").clearAuthentication(true).invalidateHttpSession(true)
+						.deleteCookies("JSESSIONID"))
+				.build();
+	}
 
 	@Bean
 	PasswordEncoder getEncoder() {
