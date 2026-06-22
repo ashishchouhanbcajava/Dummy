@@ -14,8 +14,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.Assert;
 
+import com.Dummy.Dummy.Filters.JwtAuthFilter;
 import com.Dummy.Dummy.beans.CustomAccessDeniedExceptionHandler;
 import com.Dummy.Dummy.service.UsersService;
 
@@ -27,8 +29,11 @@ public class SecurityConfig {
 	private UserDetailsService detailsService;
 
 	@Autowired
-	private CustomAccessDeniedExceptionHandler accessDeniedExceptionHandler;
+	private JwtAuthFilter authFilter;
 
+	@Autowired
+	private CustomAccessDeniedExceptionHandler accessDeniedExceptionHandler;
+//-------------Basic Auth--------------------------------------------------------------
 	// basic auth configuration for sending username and passsword with each and
 	// every request at here we have used hasAuthority and hasAnyAuthority to check
 	// the user role beacause we have overriden getAuthorities() method in our user
@@ -56,9 +61,12 @@ public class SecurityConfig {
 				authorizeHttpRequests(au -> au.requestMatchers("/login", "/users/add", "/authenticate").permitAll()
 						.requestMatchers("/admin/**").hasAuthority("ADMIN").requestMatchers("/users/**")
 						.hasAnyAuthority("ADMIN", "USER").anyRequest().authenticated())
-				.httpBasic(Customizer.withDefaults())
+				.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+//				.httpBasic(Customizer.withDefaults())  //commented basic auth for implementing jwt filter 
 				.exceptionHandling(e -> e.accessDeniedHandler(accessDeniedExceptionHandler)).build();
 	}
+
+//	-------------------Simple form login Auth----------------------------------
 
 	// configuration for mvc form login with same daoAuthentication provider and
 	// spring security automatically handles the logout you only have to provide
