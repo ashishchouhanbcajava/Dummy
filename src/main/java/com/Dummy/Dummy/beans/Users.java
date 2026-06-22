@@ -11,9 +11,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 
 @Entity
-public class Users implements UserDetails{
+public class Users implements UserDetails {
 
 	/**
 	 * 
@@ -29,6 +30,22 @@ public class Users implements UserDetails{
 	private String password;
 
 	private String role;
+	@Transient
+	private String token;
+
+	public Users() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Users(Long id, String username, String password, String role, String token) {
+		super();
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.role = role;
+		this.token = token;
+	}
 
 	public Long getId() {
 		return id;
@@ -60,6 +77,14 @@ public class Users implements UserDetails{
 
 	public void setRole(String role) {
 		this.role = role;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 	@Override
