@@ -14,4 +14,10 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<?> handleExceptions(Exception exception) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage().toString());
 	}
+
+	@ExceptionHandler(org.springframework.security.authorization.AuthorizationDeniedException.class)
+	public ResponseEntity<?> handleAuthorizationDenied(Exception ex) {
+
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to perform this action");
+	}
 }

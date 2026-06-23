@@ -8,6 +8,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,10 +20,15 @@ import org.springframework.util.Assert;
 
 import com.Dummy.Dummy.Filters.JwtAuthFilter;
 import com.Dummy.Dummy.beans.CustomAccessDeniedExceptionHandler;
+import com.Dummy.Dummy.enums.Permissions;
+import com.Dummy.Dummy.enums.Role;
 import com.Dummy.Dummy.service.UsersService;
+
+import okhttp3.internal.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
 	@Autowired
@@ -56,11 +62,12 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain config(HttpSecurity http) throws Exception {
 		System.out.println("in security config");
-		return http.csrf(csrf -> csrf.disable()).
-
-				authorizeHttpRequests(au -> au.requestMatchers("/login", "/users/add", "/authenticate").permitAll()
-						.requestMatchers("/admin/**").hasAuthority("ADMIN").requestMatchers("/users/**")
-						.hasAnyAuthority("ADMIN", "USER").anyRequest().authenticated())
+		return http.csrf(csrf -> csrf.disable())
+				.authorizeHttpRequests(au -> au.requestMatchers("/login", "/authenticate").permitAll()
+						.requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
+//						.requestMatchers(org.springframework.http.HttpMethod.POST, "/users/**")
+//						.hasAnyAuthority(Permissions.WRITE.name())
+						.anyRequest().authenticated())
 				.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
 //				.httpBasic(Customizer.withDefaults())  //commented basic auth for implementing jwt filter 
 				.exceptionHandling(e -> e.accessDeniedHandler(accessDeniedExceptionHandler)).build();

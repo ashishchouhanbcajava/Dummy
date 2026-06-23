@@ -1,13 +1,20 @@
 package com.Dummy.Dummy.beans;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.Dummy.Dummy.enums.Role;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,7 +36,8 @@ public class Users implements UserDetails {
 
 	private String password;
 
-	private String role;
+	@Enumerated(EnumType.STRING)
+	private Role role;
 	@Transient
 	private String token;
 
@@ -38,7 +46,7 @@ public class Users implements UserDetails {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Users(Long id, String username, String password, String role, String token) {
+	public Users(Long id, String username, String password, Role role, String token) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -71,11 +79,11 @@ public class Users implements UserDetails {
 		this.password = password;
 	}
 
-	public String getRole() {
+	public Role getRole() {
 		return role;
 	}
 
-	public void setRole(String role) {
+	public void setRole(Role role) {
 		this.role = role;
 	}
 
@@ -90,7 +98,14 @@ public class Users implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Auto-generated method stub
-		return List.of(new SimpleGrantedAuthority(role));
+
+		Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+		authorities.add(new SimpleGrantedAuthority( role.name()));
+
+		List<SimpleGrantedAuthority> permissions = role.getPermissions().stream()
+				.map(e -> new SimpleGrantedAuthority(e.name())).collect(Collectors.toList());
+		authorities.addAll(permissions);
+		return authorities;
 	}
 
 }

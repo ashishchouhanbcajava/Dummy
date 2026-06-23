@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.Dummy.Dummy.beans.Users;
+import com.Dummy.Dummy.enums.Role;
 import com.Dummy.Dummy.service.UsersService;
 
 @RequestMapping("/users")
@@ -25,18 +27,20 @@ public class UsersRestController {
 	@Autowired
 	private PasswordEncoder encoder;
 
+	@PreAuthorize("hasAuthority(T(com.Dummy.Dummy.enums.Permissions).WRITE.name())")
 	@PostMapping("/add")
 	public ResponseEntity<?> add(@RequestBody Users users) {
 
 		if (users.getUsername().toLowerCase().contains("admin")) {
-			users.setRole("ADMIN");
+			users.setRole(Role.ADMIN);
 		} else {
-			users.setRole("USER");
+			users.setRole(Role.USER);
 		}
 		users.setPassword(encoder.encode(users.getPassword()));
 		return ResponseEntity.ok(usersService.save(users));
 	}
 
+	@PreAuthorize("hasAuthority(T(com.Dummy.Dummy.enums.Permissions).READ.name())")
 	@GetMapping("/getAllUsers")
 	public ResponseEntity<?> getAllUsers() {
 

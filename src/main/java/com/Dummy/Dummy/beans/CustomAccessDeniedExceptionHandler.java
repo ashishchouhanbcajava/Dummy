@@ -20,6 +20,7 @@ public class CustomAccessDeniedExceptionHandler implements AccessDeniedHandler {
 
 		response.setStatus(403);
 		response.getWriter().write("message : Access Denied for current user for " + request.getRequestURI());
+		System.out.println("CUSTOM HANDLER CALLED");
 
 	}
 
