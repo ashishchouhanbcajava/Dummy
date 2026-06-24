@@ -1,5 +1,7 @@
 package com.Dummy.Dummy.configurations;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.Assert;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.Dummy.Dummy.Filters.JwtAuthFilter;
 import com.Dummy.Dummy.beans.CustomAccessDeniedExceptionHandler;
@@ -62,8 +67,8 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain config(HttpSecurity http) throws Exception {
 		System.out.println("in security config");
-		return http.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(au -> au.requestMatchers("/login", "/authenticate").permitAll()
+		return http.csrf(csrf -> csrf.disable()).cors(c -> c.configurationSource(configurationSource()))
+				.authorizeHttpRequests(au -> au.requestMatchers("/login", "/authenticate","/employees/**").permitAll()
 						.requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
 //						.requestMatchers(org.springframework.http.HttpMethod.POST, "/users/**")
 //						.hasAnyAuthority(Permissions.WRITE.name())
@@ -109,5 +114,17 @@ public class SecurityConfig {
 		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(detailsService);
 		daoAuthenticationProvider.setPasswordEncoder(getEncoder());
 		return new ProviderManager(daoAuthenticationProvider);
+	}
+
+	@Bean
+	CorsConfigurationSource configurationSource() {
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowedOrigins(List.of("http://127.0.0.1:5500"));
+//		config.setAllowCredentials(null);
+		UrlBasedCorsConfigurationSource configurationSource = new UrlBasedCorsConfigurationSource();
+
+		// at here '/**' means apply this cors configuration to the all urls
+		configurationSource.registerCorsConfiguration("/**", config);
+		return configurationSource;
 	}
 }

@@ -100,10 +100,10 @@ public class Users implements UserDetails {
 		// TODO Auto-generated method stub
 
 		Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-		authorities.add(new SimpleGrantedAuthority( role.name()));
+//		authorities.add(new SimpleGrantedAuthority(role.name()));
 
-		List<SimpleGrantedAuthority> permissions = role.getPermissions().stream()
-				.map(e -> new SimpleGrantedAuthority(e.name())).collect(Collectors.toList());
+		Set<SimpleGrantedAuthority> permissions = role.getPermissions().stream()
+				.map(e -> new SimpleGrantedAuthority(e.name())).collect(Collectors.toSet());
 		authorities.addAll(permissions);
 		return authorities;
 	}
