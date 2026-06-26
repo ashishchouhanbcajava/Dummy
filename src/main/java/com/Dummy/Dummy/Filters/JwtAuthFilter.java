@@ -57,13 +57,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-		// TODO Auto-generated method stub
-		System.out.println("in should not filter : " + request.getServletPath());
-		boolean startsWith = request.getServletPath().startsWith("/employees");
-		System.out.println("startsWith : " + startsWith);
-		return startsWith;
+	protected boolean shouldNotFilter(HttpServletRequest request) {
 
+		String path = request.getServletPath();
+
+		return path.startsWith("/employees") || path.startsWith("/oauth2") || path.startsWith("/login/oauth2")
+				|| path.equals("/authenticate");
 	}
-
 }

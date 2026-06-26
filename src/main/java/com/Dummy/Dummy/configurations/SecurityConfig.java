@@ -44,6 +44,9 @@ public class SecurityConfig {
 
 	@Autowired
 	private CustomAccessDeniedExceptionHandler accessDeniedExceptionHandler;
+
+	@Autowired
+	private OAuthSuccessHandler authSuccessHandler;
 //-------------Basic Auth--------------------------------------------------------------
 	// basic auth configuration for sending username and passsword with each and
 	// every request at here we have used hasAuthority and hasAnyAuthority to check
@@ -66,13 +69,16 @@ public class SecurityConfig {
 //	}
 	@Bean
 	SecurityFilterChain config(HttpSecurity http) throws Exception {
+
 		System.out.println("in security config");
 		return http.csrf(csrf -> csrf.disable()).cors(c -> c.configurationSource(configurationSource()))
-				.authorizeHttpRequests(au -> au.requestMatchers("/login", "/authenticate","/employees/**").permitAll()
-						.requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
+				.authorizeHttpRequests(au -> au
+						.requestMatchers("/login/**", "/authenticate", "/employees/**", "/oauth2/**", "/users/add")
+						.permitAll().requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
 //						.requestMatchers(org.springframework.http.HttpMethod.POST, "/users/**")
 //						.hasAnyAuthority(Permissions.WRITE.name())
 						.anyRequest().authenticated())
+				.oauth2Login(a -> a.successHandler(authSuccessHandler))
 				.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
 //				.httpBasic(Customizer.withDefaults())  //commented basic auth for implementing jwt filter 
 				.exceptionHandling(e -> e.accessDeniedHandler(accessDeniedExceptionHandler)).build();

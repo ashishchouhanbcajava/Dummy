@@ -19,6 +19,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 public class Users implements UserDetails {
@@ -38,6 +39,9 @@ public class Users implements UserDetails {
 
 	@Enumerated(EnumType.STRING)
 	private Role role;
+
+	@NotEmpty(message = "contact is required")
+	private String contact;
 	@Transient
 	private String token;
 
@@ -46,13 +50,14 @@ public class Users implements UserDetails {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Users(Long id, String username, String password, Role role, String token) {
+	public Users(Long id, String username, String password, Role role, String token, String contact) {
 		super();
 		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.role = role;
 		this.token = token;
+		this.contact = contact;
 	}
 
 	public Long getId() {
@@ -93,6 +98,14 @@ public class Users implements UserDetails {
 
 	public void setToken(String token) {
 		this.token = token;
+	}
+
+	public String getContact() {
+		return contact;
+	}
+
+	public void setContact(String contact) {
+		this.contact = contact;
 	}
 
 	@Override

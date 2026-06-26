@@ -31,8 +31,8 @@ public class AuthenticationRestController {
 				Users user = (Users) authenticate.getPrincipal();
 				String token = JwtUtil.generateToken(request.getUsername());
 
-				return ResponseEntity
-						.ok(new Users(user.getId(), user.getUsername(), user.getPassword(), user.getRole(), token));
+				return ResponseEntity.ok(new Users(user.getId(), user.getUsername(), user.getPassword(), user.getRole(),
+						token, user.getContact()));
 
 			}
 		} catch (Exception e) {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,8 @@ import com.Dummy.Dummy.beans.Users;
 import com.Dummy.Dummy.enums.Role;
 import com.Dummy.Dummy.service.UsersService;
 
+import jakarta.validation.Valid;
+
 @RequestMapping("/users")
 @RestController
 public class UsersRestController {
@@ -29,7 +32,12 @@ public class UsersRestController {
 
 	@PreAuthorize("hasAuthority(T(com.Dummy.Dummy.enums.Permissions).WRITE.name())")
 	@PostMapping("/add")
-	public ResponseEntity<?> add(@RequestBody Users users) {
+	public ResponseEntity<?> add(@Valid @RequestBody Users users) {
+
+		if (usersService.existsByUsername(users.getUsername())) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body("user already exists with 'username' " + users.getUsername());
+		}
 
 		if (users.getUsername().toLowerCase().contains("admin")) {
 			users.setRole(Role.ADMIN);

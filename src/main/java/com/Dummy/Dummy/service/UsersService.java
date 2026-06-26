@@ -31,4 +31,8 @@ public class UsersService implements UserDetailsService {
 	public List<Users> getAll() {
 		return repository.findAll();
 	}
+
+	public boolean existsByUsername(String username) {
+		return repository.existsByUsername(username);
+	}
 }

@@ -9,4 +9,7 @@ import com.Dummy.Dummy.beans.Users;
 public interface UsersRepository extends JpaRepository<Users, Long> {
 
 	Users findByUsername(String username);
+
+	boolean existsByUsername(String username);
+
 }
